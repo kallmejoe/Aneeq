@@ -4,7 +4,6 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   modules: [
-    "@nuxtjs/supabase",
     "@nuxt/eslint",
     "@nuxt/image",
     "@nuxt/ui",
