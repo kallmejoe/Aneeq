@@ -20,16 +20,19 @@ Multi-app educational platform built with Nuxt 4, featuring separate application
 
 ```
 ├── apps/
-│   ├── students/      # Student portal
-│   ├── staff/        # Staff dashboard
-│   └── instructors/   # Instructor app
-├── layers/core/      # Shared UI components
+│   ├── students/      # Student portal (extends core layer)
+│   ├── staff/         # Staff dashboard (extends core layer)
+│   └── instructors/   # Instructor app (extends core layer)
+├── layers/
+│   └── core/
+│       ├── components/ # Shared UI components
+│       ├── composables/ # Shared composables
+│       └── lib/        # Shared utilities & themes
 ├── server/
-│   ├── api/          # API routes (auth, etc.)
-│   ├── middleware/  # Auth middleware
-│   ├── plugins/      # Database plugin
-│   └── utils/         # DB utilities
-└── db/               # SQLite database
+│   ├── api/           # API routes (auth, etc.)
+│   ├── middleware/    # Request middleware
+│   └── utils/         # Server utilities
+└── db/                # SQLite database
 ```
 
 ## Setup
@@ -45,20 +48,45 @@ bun run postinstall
 
 ## Development
 
+Each app can run independently:
+
 ```bash
-# Run student app
+# Run student app (localhost:3000)
 bun run dev:students
 
-# Run staff app
+# Run staff app (localhost:3000)
 bun run dev:staff
 ```
 
-Production builds are available:
+## Building for Production
+
 ```bash
+# Build student app
 bun run build:students
+
+# Build staff app
 bun run build:staff
+
+# Preview production build
+bun run preview
 ```
+
+## Layer Architecture
+
+All apps extend the `layers/core` layer which provides:
+
+- **Shared UI Components**: 50+ shadcn-based components in `layers/core/components/ui/`
+- **Shared Composables**: Reusable Vue composables in `layers/core/composables/`
+- **Theme System**: CSS variables and styling in `layers/core/lib/theme.css`
+
+Each app automatically imports components and composables from the core layer without explicit imports.
 
 ## Database
 
-SQLite database located at `db/database.sqlite`. Schema is managed via server-side initialization.
+SQLite database located at `db/database.sqlite`.
+
+To reset the database:
+```bash
+rm db/database.sqlite
+# Restart dev server to reinitialize
+```

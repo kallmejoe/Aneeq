@@ -1,4 +1,5 @@
 // layers/core/nuxt.config.ts
 export default defineNuxtConfig({
-    css: ['~/lib/theme.css']
+  // Components are auto-imported from layers/core/components
+  // Composables are auto-imported from layers/core/composables
 })

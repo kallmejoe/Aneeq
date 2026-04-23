@@ -9,6 +9,12 @@ export default defineNuxtConfig({
     "@nuxt/ui",
     "@nuxtjs/seo",
   ],
+
+  alias: {
+    '@': new URL('./', import.meta.url).pathname,
+    '@core': new URL('./layers/core', import.meta.url).pathname,
+  },
+
   postcss: {
     plugins: {
       "@tailwindcss/postcss": {},
