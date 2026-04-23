@@ -7,5 +7,5 @@ CREATE TABLE IF NOT EXISTS users (
  password TEXT,
  name TEXT,
  role TEXT,
-);
+J);
 `)

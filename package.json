@@ -3,8 +3,10 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev:students": "nuxt dev apps/students",
+    "dev:staff": "nuxt dev apps/staff",
+    "build:students": "nuxt build apps/students",
+    "build:staff": "nuxt build apps/staff",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
