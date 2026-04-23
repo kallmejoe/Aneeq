@@ -1,75 +1,64 @@
-# Nuxt Minimal Starter
+# Luemy
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Multi-app educational platform built with Nuxt 4, featuring separate applications for students, staff, and instructors.
+
+## Apps
+
+- **students** - Student portal application
+- **staff** - Staff/administrator dashboard
+- **instructors** - Instructor management interface
+
+## Tech Stack
+
+- **Framework**: Nuxt 4
+- **UI**: @nuxt/ui + shadcn-nuxt
+- **Database**: SQLite (better-sqlite3)
+- **Auth**: Custom JWT-based authentication
+- **Validation**: Zod + vee-validate
+
+## Project Structure
+
+```
+├── apps/
+│   ├── students/      # Student portal
+│   ├── staff/        # Staff dashboard
+│   └── instructors/   # Instructor app
+├── layers/core/      # Shared UI components
+├── server/
+│   ├── api/          # API routes (auth, etc.)
+│   ├── middleware/  # Auth middleware
+│   ├── plugins/      # Database plugin
+│   └── utils/         # DB utilities
+└── db/               # SQLite database
+```
 
 ## Setup
 
-Make sure to install dependencies:
-
 ```bash
-# npm
-npm install
+# Install dependencies
+bun install  # or npm install
 
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
+# Prepare Nuxt
+bun run postinstall
+# or: npx nuxt prepare
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+## Development
 
 ```bash
-# npm
-npm run dev
+# Run student app
+bun run dev:students
 
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+# Run staff app
+bun run dev:staff
 ```
 
-## Production
-
-Build the application for production:
-
+Production builds are available:
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+bun run build:students
+bun run build:staff
 ```
 
-Locally preview production build:
+## Database
 
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+SQLite database located at `db/database.sqlite`. Schema is managed via server-side initialization.
