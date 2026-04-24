@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     "@nuxt/ui",
     "@nuxtjs/seo",
     "@nuxtjs/tailwindcss",
+    "@pinia/nuxt"
   ],
 
   nitro: {
