@@ -44,8 +44,8 @@ export default defineEventHandler(async (event) => {
       success: true,
       userId: result.lastInsertRowid
     }
-  } catch (err:any) {
+  } catch (err) {
     console.error('[signup] Error:', err)
-    return { success: false, message: err.message || 'Signup failed' }
+    return { success: false, message: err || 'Signup failed' }
   }
 })
