@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from "vue"
 import { useVModel } from "@vueuse/core"
-import { cn } from "@/lib/utils"
+import { cn } from "@core/lib/utils"
 
 const props = defineProps<{
   defaultValue?: string | number
@@ -23,11 +23,36 @@ const modelValue = useVModel(props, "modelValue", emits, {
   <input
     v-model="modelValue"
     data-slot="input"
-    :class="cn(
-      'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-      'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
-      'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
-      props.class,
-    )"
+    :class="cn('ui-input', props.class)"
   >
 </template>
+
+<style scoped>
+.ui-input {
+  width: 100%;
+  min-height: 2rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--input);
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 0.875rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ui-input::placeholder {
+  color: var(--muted-foreground);
+}
+
+.ui-input:focus {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-color: var(--ring);
+}
+
+.ui-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+</style>

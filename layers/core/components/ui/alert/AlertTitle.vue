@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from "vue"
-import { cn } from "@/lib/utils"
+import { cn } from "@core/lib/utils"
 
 const props = defineProps<{
   class?: HTMLAttributes["class"]
@@ -10,8 +10,15 @@ const props = defineProps<{
 <template>
   <div
     data-slot="alert-title"
-    :class="cn('col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight', props.class)"
+    :class="cn('ui-alert-title', props.class)"
   >
     <slot />
   </div>
 </template>
+
+<style scoped>
+.ui-alert-title {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+</style>

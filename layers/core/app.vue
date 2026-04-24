@@ -1,7 +1,5 @@
 <template>
-  <slot />
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
-
-<style>
-@import '@core/lib/theme.css';
-</style>
