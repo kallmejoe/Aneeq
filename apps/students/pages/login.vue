@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // eslint-disable-next-line vue/multi-word-component-names
-import LoginForm from '../../../layers/core/components/LoginForm.vue';
+import LoginForm from '@core/components/LoginForm.vue';
 </script>
 
 <template>

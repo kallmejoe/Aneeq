@@ -24,6 +24,6 @@ export default defineNuxtConfig({
 
   // Stable alias for shared layer imports.
   alias: {
-    '@core': new URL('./', import.meta.url).pathname,
+    '@core': new URL('../..', import.meta.url).pathname + 'layers/core',
   },
 })

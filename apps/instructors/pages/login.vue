@@ -1,3 +1,8 @@
+<script setup lang="ts">
+// eslint-disable-next-line vue/multi-word-component-names
+import LoginForm from '@core/components/LoginForm.vue';
+</script>
+
 <template>
   <!-- eslint-disable-next-line vue/multi-word-component-names -->
   <div class="min-h-screen bg-gray-50 py-8">
