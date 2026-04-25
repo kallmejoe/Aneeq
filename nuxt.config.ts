@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     "@nuxt/ui",
     "@nuxtjs/seo",
     "@nuxtjs/tailwindcss",
+    "@pinia/nuxt"
   ],
 
   nitro: {
@@ -19,4 +20,8 @@ export default defineNuxtConfig({
   alias: {
     '@core': new URL('./layers/core', import.meta.url).pathname,
   },
+
+  imports: {
+    dirs: ['./layers/core/composables']
+  }
 });

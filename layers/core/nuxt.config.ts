@@ -7,7 +7,10 @@ export default defineNuxtConfig({
   components: [
     { path: './components', pathPrefix: false }
   ],
-  // Composables are auto-imported from layers/core/composables
+  // Composables and middleware are auto-imported
+  imports: {
+    dirs: ['./composables', './middleware']
+  },
   
   // Enable pages for page-based routing
   pages: true,
@@ -21,6 +24,6 @@ export default defineNuxtConfig({
 
   // Stable alias for shared layer imports.
   alias: {
-    '@core': new URL('./', import.meta.url).pathname,
+    '@core': new URL('../..', import.meta.url).pathname + 'layers/core',
   },
 })
