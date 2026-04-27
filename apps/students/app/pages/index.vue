@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { useAuth } from '@core/composables/useAuth'
-import SignupForm from '@core/components/SignupForm.vue'
 definePageMeta({
   layout: 'auth'
 })
 
-
+import { useAuth } from '@core/composables/useAuth'
+import {signupForm} from
 const { isAuthenticated } = useAuth()
 const router = useRouter()
 
@@ -69,3 +68,4 @@ onMounted(() => {
   text-underline-offset: 2px;
 }
 </style>
+

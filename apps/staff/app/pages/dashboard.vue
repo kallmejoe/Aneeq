@@ -10,13 +10,13 @@ const user = useUser()
 
 <template>
   <div class="dashboard">
-    <h1 class="dashboard-title">Student Dashboard</h1>
+    <h1 class="dashboard-title">Staff Dashboard</h1>
     <p class="dashboard-welcome">Welcome back, <strong>{{ user?.name }}</strong> 👋</p>
 
     <div class="dashboard-grid">
       <div class="dashboard-card">
         <h2>Overview</h2>
-        <p>You're all set! Explore your courses or check your progress below.</p>
+        <p>Manage students, courses and grades from the staff portal.</p>
       </div>
     </div>
   </div>

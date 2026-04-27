@@ -25,8 +25,8 @@ async function handleSubmit() {
     } else {
       error.value = result.message || 'Login failed'
     }
-  } catch (err: Error) {
-    error.value = err.message || 'Login failed'
+  } catch (err: unknown) {
+    error.value = (err as Error).message || 'Login failed'
   } finally {
     loading.value = false
   }

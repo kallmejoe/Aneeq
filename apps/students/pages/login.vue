@@ -1,14 +1,29 @@
 <script setup lang="ts">
-// eslint-disable-next-line vue/multi-word-component-names
-import LoginForm from '@core/components/LoginForm.vue';
+import { useAuth } from '@core/composables/useAuth'
+import LoginForm from '@core/components/LoginForm.vue'
+
+definePageMeta({
+  layout: 'auth'
+})
+
+
+const { isAuthenticated } = useAuth()
+const router = useRouter()
+
+onMounted(() => {
+  if (isAuthenticated()) {
+    router.push('/dashboard')
+  }
+})
 </script>
 
 <template>
-  <div class="login-page">
-    <div class="login-container">
-      <h1 class="login-title">Login</h1>
+  <div class="auth-page">
+    <div class="auth-card">
+      <h1 class="auth-title">Welcome back</h1>
+      <p class="auth-subtitle">Log in to your student account</p>
       <LoginForm />
-      <p class="signup-link">
+      <p class="auth-link">
         Don't have an account? <NuxtLink to="/">Sign up</NuxtLink>
       </p>
     </div>
@@ -16,37 +31,42 @@ import LoginForm from '@core/components/LoginForm.vue';
 </template>
 
 <style scoped>
-.login-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  background: var(--background);
-}
-
-.login-container {
+.auth-page {
   width: 100%;
-  max-width: 20rem;
+  padding: 1rem;
 }
 
-.login-title {
-  margin: 0 0 1.5rem;
+.auth-card {
+  width: 100%;
+  max-width: 22rem;
+  margin: 0 auto;
+}
+
+.auth-title {
+  margin: 0 0 0.25rem;
   color: var(--foreground);
   text-align: center;
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-.signup-link {
+.auth-subtitle {
+  margin: 0 0 1.5rem;
+  color: var(--muted-foreground);
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.auth-link {
   margin-top: 1rem;
   text-align: center;
   font-size: 0.875rem;
   color: var(--muted-foreground);
 }
 
-.signup-link a {
+.auth-link a {
   color: var(--primary);
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 </style>
