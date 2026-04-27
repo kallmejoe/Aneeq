@@ -4,6 +4,7 @@ definePageMeta({
 })
 
 import { useAuth } from '@core/composables/useAuth'
+import SignupForm from '@core/components/SignupForm.vue'
 
 const { isAuthenticated } = useAuth()
 const router = useRouter()
