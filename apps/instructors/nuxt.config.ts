@@ -1,4 +1,4 @@
 export default defineNuxtConfig({
-  srcDir: 'app',
+  srcDir: '.',
   extends: ['../../layers/core']
 })
