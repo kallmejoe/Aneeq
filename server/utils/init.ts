@@ -1,13 +1,6 @@
 import { db } from "./db";
 
 db.exec(`
-/*
-    Notes:
-    dates text refrences ISO dates
-    i am feeling sick and sleepy so I'll delat the 
-    writing of documentation for each table,
-     I will do it in a later commit
-*/
 
 -- users table
 CREATE TABLE users (
@@ -36,7 +29,10 @@ CREATE TABLE students_info (
 CREATE TABLE courses (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
+    description TEXT,
     professor_id INTEGER NOT NULL,
+    active INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     FOREIGN KEY (professor_id) REFERENCES professors_info(user_id) ON DELETE RESTRICT
 );
 

@@ -11,6 +11,14 @@ export default defineNitroPlugin(() => {
       name TEXT,
       role TEXT
     );
+    CREATE TABLE IF NOT EXISTS courses (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT,
+      professor_id INTEGER,
+      active INTEGER NOT NULL DEFAULT 1,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
     `)
     console.log('[Nitro Plugin] Database initialized successfully')
   } catch (err) {
