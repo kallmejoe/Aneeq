@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { useUser } from '@core/composables/useUser';
-import { useAuth } from '@core/composables/useAuth';
+
 definePageMeta({
   middleware: ['auth']
 });
 
 const user = useUser();
 const { logout } = useAuth();
+
+const showCreateCourseModal = ref(false)
+
 </script>
 
 <template>
@@ -15,6 +18,10 @@ const { logout } = useAuth();
       <div class="container mx-auto px-4 py-4">
         <div class="flex justify-between items-center">
           <h1 class="text-2xl font-bold">Instructor Dashboard</h1>
+          <button @click="showCreateCourseModal = true">
+            Create Course
+          </button>
+
           <div class="flex items-center gap-4">
             <span class="text-gray-600">Welcome, {{ user?.name }}</span>
             <button class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600" @click="logout">
