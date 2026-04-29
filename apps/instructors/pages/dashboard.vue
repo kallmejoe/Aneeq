@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useUser } from '@core/composables/useUser';
+import { useAuth } from '@core/composables/useAuth';
 
 definePageMeta({
   middleware: ['auth']
@@ -31,7 +32,7 @@ const courseForm = ref({
           <div v-if="showCreateCourseModal">
             <input v-model="courseForm.name" />
             <textarea v-model="courseForm.description" />
-            <input type="checkbox" v-model="courseForm.active" />
+            <input type="checkbox" v-model="courseForm.active" >
           </div>
           <div class="flex items-center gap-4">
             <span class="text-gray-600">Welcome, {{ user?.name }}</span>
