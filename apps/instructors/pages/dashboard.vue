@@ -73,9 +73,14 @@ async function createCourse() {
 
       <div class="dashboard-card dashboard-card--action">
         <h2>Quick Actions</h2>
-        <UiButton @click="showCreateCourseModal = true">
-          Create Course
-        </UiButton>
+        <div class="action-buttons">
+          <UiButton @click="showCreateCourseModal = true">
+            Create Course
+          </UiButton>
+          <UiButton variant="outline" @click="navigateTo('/assignments')">
+            Manage Assignments
+          </UiButton>
+        </div>
       </div>
     </div>
 
@@ -196,6 +201,12 @@ async function createCourse() {
   margin: 0.25rem 0;
   color: var(--muted-foreground);
   font-size: 0.875rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .modal-overlay {

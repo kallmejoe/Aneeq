@@ -70,6 +70,7 @@ CREATE TABLE assignments (
     course_id INTEGER NOT NULL,
     title TEXT NOT NULL,
     description TEXT,
+    max_score REAL NOT NULL DEFAULT 100,
     due_date TEXT, 
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );
