@@ -1,12 +1,23 @@
 import { db } from '../../utils/db'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async () => {
     try{
         const courses = db.prepare(`
-                SELECT id,name,description,professor_id,active,created_at
-                FROM courses
-                WHERE active=1
-                ORDER BY created_at
+                SELECT
+                    c.id,
+                    c.name,
+                    c.description,
+                    c.active,
+                    c.created_at,
+                    u.id AS professor_id,
+                    u.name AS professor_name,
+                    u.email AS professor_email,
+                    pi.department AS professor_department
+                FROM courses c
+                JOIN users u ON u.id = c.professor_id
+                LEFT JOIN professors_info pi ON pi.user_id = c.professor_id
+                WHERE c.active = 1
+                ORDER BY c.created_at
             `).all()
         return {
             success: true,
