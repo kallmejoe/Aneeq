@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import UiButton from '@core/components/ui/Button.vue'
 
 definePageMeta({
   middleware: ['auth']
 })
 
 const token = useCookie('token')
-const user = useUser()
 
 const courses = ref<any[]>([])
 const activeCourseIds = ref<number[]>([])
-
 const selectedCourseIds = ref<number[]>([])
 
 const fetchCourses = async () => {
@@ -31,8 +30,9 @@ const fetchActiveCourses = async () => {
         Authorization: `Bearer ${token.value}`
       }
     })
+
     if (res.success) {
-      activeCourseIds.value = res.courses.map((c: any) => c.id)
+      activeCourseIds.value = res.courses.map((course: any) => course.id)
     }
   } catch (error) {
     console.error(error)
@@ -45,7 +45,7 @@ onMounted(async () => {
 
 const handleEnrollment = async () => {
   if (selectedCourseIds.value.length === 0) return
-  
+
   try {
     const res = await $fetch('/api/student/enroll', {
       method: 'POST',
@@ -56,8 +56,8 @@ const handleEnrollment = async () => {
         courseIds: selectedCourseIds.value
       }
     })
+
     if (res.success) {
-      // Refresh enrollments and clear selection
       await fetchActiveCourses()
       selectedCourseIds.value = []
       alert('Successfully enrolled!')
@@ -79,26 +79,48 @@ const isEnrolled = (courseId: number) => activeCourseIds.value.includes(courseId
 
 <template>
   <div class="courses-page">
-    <h1 class="page-title">Available Courses</h1>
-    
-    <div class="actions" v-if="selectedCourseIds.length > 0">
-      <Button @click="handleEnrollment">Register Selected Courses ({{ selectedCourseIds.length }})</Button>
-      <Button variant="outline" @click="clearSelection">Clear Selection</Button>
+    <div class="courses-toolbar">
+      <div class="courses-heading">
+        <h1 class="page-title">Available Courses</h1>
+        <p class="page-subtitle">Select one or more courses, then enroll from the top right.</p>
+      </div>
+
+      <div class="actions">
+        <UiButton :disabled="selectedCourseIds.length === 0" @click="handleEnrollment">
+          Enroll Selected ({{ selectedCourseIds.length }})
+        </UiButton>
+        <UiButton variant="outline" :disabled="selectedCourseIds.length === 0" @click="clearSelection">
+          Clear
+        </UiButton>
+      </div>
     </div>
 
     <div class="course-list">
-      <div v-for="course in courses" :key="course.id" class="course-card" :class="{ 'enrolled': isEnrolled(course.id) }">
-        <div class="course-info">
-          <h3>{{ course.name }}</h3>
-          <p v-if="course.professor_name">Professor: {{ course.professor_name }}</p>
-          <span v-if="isEnrolled(course.id)" class="badge">Already Enrolled</span>
-        </div>
-        <div class="course-action" v-if="!isEnrolled(course.id)">
-          <label>
-            <input type="checkbox" :value="course.id" v-model="selectedCourseIds" />
-            Select
-          </label>
-        </div>
+      <div
+        v-for="course in courses"
+        :key="course.id"
+        class="course-card"
+        :class="{ enrolled: isEnrolled(course.id) }"
+      >
+        <label class="course-row">
+          <div class="course-select">
+            <input
+              v-if="!isEnrolled(course.id)"
+              v-model="selectedCourseIds"
+              type="checkbox"
+              :value="course.id"
+            />
+            <span v-else class="course-dot course-dot--enrolled"></span>
+          </div>
+
+          <div class="course-info">
+            <div class="course-title-row">
+              <h3>{{ course.name }}</h3>
+              <span v-if="isEnrolled(course.id)" class="badge">Enrolled</span>
+            </div>
+            <p v-if="course.professor_name">{{ course.professor_name }}</p>
+          </div>
+        </label>
       </div>
     </div>
   </div>
@@ -106,59 +128,123 @@ const isEnrolled = (courseId: number) => activeCourseIds.value.includes(courseId
 
 <style scoped>
 .courses-page {
-  padding: 1rem;
-}
-.page-title {
-  margin-bottom: 2rem;
-  font-size: 2rem;
-  font-weight: bold;
-}
-.actions {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-.course-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
-}
-.course-card {
-  border: 1px solid var(--border, #ddd);
-  border-radius: 8px;
-  padding: 1.5rem;
   display: flex;
   flex-direction: column;
+  gap: 1rem;
+  min-height: 100%;
+}
+
+.courses-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  background: var(--background);
 }
+
+.courses-heading {
+  min-width: 0;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.page-subtitle {
+  margin: 0.35rem 0 0;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.course-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.course-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  padding: 0.9rem 1rem;
+}
+
 .course-card.enrolled {
-  background-color: var(--muted, #f9f9f9);
-  opacity: 0.8;
+  background: var(--muted, #f8f8f8);
 }
-.course-info h3 {
-  margin-top: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
+
+.course-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
 }
-.badge {
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  background-color: #4caf50;
-  color: white;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  margin-top: 0.5rem;
+
+.course-select {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.5rem;
 }
-.course-action {
-  margin-top: 1rem;
-  border-top: 1px solid var(--border, #eee);
-  padding-top: 1rem;
+
+.course-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 999px;
+  background: var(--border);
 }
-.course-action label {
-  cursor: pointer;
+
+.course-dot--enrolled {
+  background: #4caf50;
+}
+
+.course-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.course-title-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-weight: 500;
+  flex-wrap: wrap;
+}
+
+.course-info h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.course-info p {
+  margin: 0.25rem 0 0;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(76, 175, 80, 0.12);
+  color: #2e7d32;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 </style>

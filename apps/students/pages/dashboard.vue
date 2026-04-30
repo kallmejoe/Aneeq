@@ -4,8 +4,11 @@ definePageMeta({
 })
 
 import { useUser } from '@core/composables/useUser'
+import UiButton from '@core/components/ui/Button.vue'
 
 const user = useUser()
+
+const goToCourses = () => navigateTo('/courses')
 </script>
 
 <template>
@@ -17,6 +20,7 @@ const user = useUser()
       <div class="dashboard-card">
         <h2>Overview</h2>
         <p>You're all set! Explore your courses or check your progress below.</p>
+        <UiButton class="dashboard-cta" @click="goToCourses">Go to Course Enrollment</UiButton>
       </div>
     </div>
   </div>
@@ -65,5 +69,9 @@ const user = useUser()
   color: var(--muted-foreground);
   font-size: 0.875rem;
   line-height: 1.6;
+}
+
+.dashboard-cta {
+  margin-top: 1rem;
 }
 </style>
