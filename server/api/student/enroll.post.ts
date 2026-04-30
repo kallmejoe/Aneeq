@@ -1,5 +1,6 @@
 import { db } from "../../utils/db";
 import { jwtVerify } from 'jose';
+import { defineEventHandler, createError, getHeader, readBody } from 'h3';
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'your-secret-key-change-in-production'
