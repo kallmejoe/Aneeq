@@ -23,22 +23,43 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, message: 'Invalid token' });
   }
 
+  const body = await readBody(event);
+  const { courseIds } = body;
+
+  if (!courseIds || !Array.isArray(courseIds)) {
+    return {
+      success: false,
+      message: "Missing or invalid required field: courseIds (must be an array)"
+    };
+  }
+
   try {
-    const courses = db.prepare(
-      `SELECT c.id, c.name, c.professor_id 
-       FROM courses c 
-       JOIN course_enrollments e ON c.id = e.course_id 
-       WHERE e.student_id = ?`
-    ).all(studentId);
+    // We use a transaction for batch insert
+    const insertEnrollment = db.prepare(
+      `INSERT OR IGNORE INTO course_enrollments (student_id, course_id) VALUES (?, ?)`
+    );
+    
+    const enrollMany = db.transaction((ids: number[]) => {
+      let count = 0;
+      for (const id of ids) {
+         const result = insertEnrollment.run(studentId, id);
+         count += result.changes;
+      }
+      return count;
+    });
+
+    const addedCount = enrollMany(courseIds);
+
     return {
       success: true,
-      courses: courses
-    }
+      message: `Successfully enrolled in ${addedCount} courses.`,
+      addedCount
+    };
   } catch (error) {
     console.error(error);
     return {
       success: false,
-      message: "Error fetching active courses"
-    }
+      message: "Error enrolling in courses"
+    };
   }
-})
+});
