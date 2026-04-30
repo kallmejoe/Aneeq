@@ -20,7 +20,7 @@ onMounted(() => {
     <div class="auth-card">
       <h1 class="auth-title">Staff Login</h1>
       <p class="auth-subtitle">Log in to your staff account</p>
-      <LoginForm />
+      <LoginForm :allowed-roles="['admin']" portal-label="staff" />
       <p class="auth-link">
         Don't have an account? <NuxtLink to="/">Sign up</NuxtLink>
       </p>

@@ -22,7 +22,7 @@ onMounted(() => {
     <div class="auth-card">
       <h1 class="auth-title">Instructor Login</h1>
       <p class="auth-subtitle">Log in to your instructor account</p>
-      <LoginForm />
+      <LoginForm :allowed-roles="['professor']" portal-label="instructor" />
       <p class="auth-link">
         Don't have an account? <NuxtLink to="/">Sign up</NuxtLink>
       </p>

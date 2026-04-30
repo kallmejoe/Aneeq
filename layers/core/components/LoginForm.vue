@@ -7,6 +7,11 @@ import UiInput from "@core/components/ui/Input.vue";
 import UiLabel from "@core/components/ui/Label.vue";
 import { useAuth } from "@core/composables/useAuth";
 
+const props = defineProps<{
+  allowedRoles?: string[];
+  portalLabel?: string;
+}>();
+
 const email = ref("");
 const password = ref("");
 const error = ref("");
@@ -18,7 +23,10 @@ async function handleSubmit() {
   loading.value = true;
 
   try {
-    const result = await login(email.value, password.value);
+    const result = await login(email.value, password.value, {
+      allowedRoles: props.allowedRoles,
+      portalLabel: props.portalLabel
+    });
 
     if (result.success) {
       await navigateTo("/dashboard");
