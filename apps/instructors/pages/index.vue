@@ -1,33 +1,72 @@
 <script setup lang="ts">
-import SignupForm from '../../../layers/core/components/SignupForm.vue';
-import { useAuth } from '@core/composables/useAuth';
+import { useAuth } from '@core/composables/useAuth'
+import SignupForm from '@core/components/SignupForm.vue'
 
 definePageMeta({
-  layout: false
-});
+  layout: 'auth'
+})
 
-const { isAuthenticated } = useAuth();
-const router = useRouter();
+
+const { isAuthenticated } = useAuth()
+const router = useRouter()
 
 onMounted(() => {
   if (isAuthenticated()) {
-    router.push('/dashboard');
+    router.push('/dashboard')
   }
-});
+})
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 py-8">
-    <div class="container mx-auto px-4">
-      <div class="max-w-md mx-auto">
-        <h1 class="text-3xl font-bold text-center mb-8">Instructor Signup</h1>
-        <div class="bg-white rounded-lg shadow p-6">
-          <SignupForm role="professor" />
-          <p class="mt-4 text-center text-sm text-gray-600">
-            Already have an account? <NuxtLink to="/login" class="text-blue-600 hover:underline">Login</NuxtLink>
-          </p>
-        </div>
-      </div>
+  <div class="auth-page">
+    <div class="auth-card">
+      <h1 class="auth-title">Create account</h1>
+      <p class="auth-subtitle">Sign up as an instructor</p>
+      <SignupForm role="professor" />
+      <p class="auth-link">
+        Already have an account? <NuxtLink to="/login">Log in</NuxtLink>
+      </p>
     </div>
   </div>
 </template>
+
+<style scoped>
+.auth-page {
+  width: 100%;
+  padding: 1rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 22rem;
+  margin: 0 auto;
+}
+
+.auth-title {
+  margin: 0 0 0.25rem;
+  color: var(--foreground);
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.auth-subtitle {
+  margin: 0 0 1.5rem;
+  color: var(--muted-foreground);
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.auth-link {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
+
+.auth-link a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+</style>
