@@ -3,7 +3,7 @@ import { db } from "./db";
 db.exec(`
 
 -- users table
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
@@ -12,21 +12,21 @@ CREATE TABLE users (
 );
 
 -- proffesor information
-CREATE TABLE professors_info (
+CREATE TABLE IF NOT EXISTS professors_info (
     user_id INTEGER PRIMARY KEY,
     department TEXT,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- student information 
-CREATE TABLE students_info (
+CREATE TABLE IF NOT EXISTS students_info (
     user_id INTEGER PRIMARY KEY,
     major TEXT,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- courses
-CREATE TABLE courses (
+CREATE TABLE IF NOT EXISTS courses (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     description TEXT,
@@ -37,7 +37,7 @@ CREATE TABLE courses (
 );
 
 -- course_time_slots
-CREATE TABLE course_time_slots (
+CREATE TABLE IF NOT EXISTS course_time_slots (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     course_id INTEGER NOT NULL,
     day_of_week TEXT NOT NULL,
@@ -46,18 +46,18 @@ CREATE TABLE course_time_slots (
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );
 
-CREATE TABLE professor_av_time_slots (
+CREATE TABLE IF NOT EXISTS professor_av_time_slots (
     id INTEGER PRIMARY KEY AUTOINCREMENT, 
     professor_id INTEGER NOT NULL,
     day_of_week TEXT NOT NULL,
     start_time TEXT NOT NULL, 
     end_time TEXT NOT NULL,  
-    FOREIGN KEY (professor_id) REFERENCES professor_info(user_id) ON DELETE CASCADE
+    FOREIGN KEY (professor_id) REFERENCES professors_info(user_id) ON DELETE CASCADE
 );
 
 -- courses students enrollments  
 -- not sure if on delete cascade would be correct here
-CREATE TABLE course_enrollments (
+CREATE TABLE IF NOT EXISTS course_enrollments (
     student_id INTEGER NOT NULL,
     course_id INTEGER NOT NULL,
     PRIMARY KEY (student_id, course_id),
@@ -65,7 +65,7 @@ CREATE TABLE course_enrollments (
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );
 
-CREATE TABLE assignments (
+CREATE TABLE IF NOT EXISTS assignments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     course_id INTEGER NOT NULL,
     title TEXT NOT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE assignments (
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );
 
-CREATE TABLE assignment_grades (
+CREATE TABLE IF NOT EXISTS assignment_grades (
     student_id INTEGER NOT NULL,
     assignment_id INTEGER NOT NULL,
     grade REAL,
