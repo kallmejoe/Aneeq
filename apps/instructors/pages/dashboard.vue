@@ -144,7 +144,7 @@ async function createCourse() {
           </div>
 
           <div class="flex items-center gap-2">
-            <input id="course-active" v-model="courseForm.active" type="checkbox">
+            <input id="course-active" v-model="courseForm.active" type="checkbox" name="active">
             <label for="course-active" class="text-sm text-gray-700">Active</label>
           </div>
 
