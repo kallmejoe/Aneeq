@@ -8,10 +8,9 @@ definePageMeta({
 });
 
 const user = useUser();
-const { logout } = useAuth();
+const { logout, token } = useAuth();
 
 const showCreateCourseModal = ref(false)
-
 
 const courseForm = ref({
   name: '',
@@ -29,22 +28,25 @@ async function createCourse() {
   try {
     const response = await $fetch('/api/courses', {
       method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      },
       body: {
         name: courseForm.value.name,
         description: courseForm.value.description,
-        active: courseForm.value.active,
-        professor_id: user.value?.id
+        active: courseForm.value.active
       }
     })
 
-    console.log(response)
-
-    showCreateCourseModal.value = false
-
-    courseForm.value = {
-      name: '',
-      description: '',
-      active: true
+    if (response.success) {
+      showCreateCourseModal.value = false
+      courseForm.value = {
+        name: '',
+        description: '',
+        active: true
+      }
+    } else {
+      createCourseError.value = response.message || 'Failed to create course'
     }
   } catch (err) {
     createCourseError.value = 'Failed to create course'
@@ -52,10 +54,6 @@ async function createCourse() {
     creatingCourse.value = false
   }
 }
-
-
-
-
 </script>
 
 <template>
@@ -103,12 +101,16 @@ async function createCourse() {
     <div
       v-if="showCreateCourseModal"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="create-course-title"
     >
       <div class="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl">
         <div class="mb-6 flex items-center justify-between">
-          <h2 class="text-xl font-semibold">Create Course</h2>
+          <h2 id="create-course-title" class="text-xl font-semibold">Create Course</h2>
           <button
             type="button"
+            aria-label="Close dialog"
             class="text-2xl leading-none text-gray-500 hover:text-gray-700"
             @click="showCreateCourseModal = false"
           >
@@ -122,8 +124,9 @@ async function createCourse() {
           </div>
 
           <div class="space-y-1">
-            <label class="block text-sm font-medium text-gray-700">Course Name</label>
+            <label for="course-name" class="block text-sm font-medium text-gray-700">Course Name</label>
             <input
+              id="course-name"
               v-model="courseForm.name"
               class="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
               type="text"
@@ -132,17 +135,18 @@ async function createCourse() {
           </div>
 
           <div class="space-y-1">
-            <label class="block text-sm font-medium text-gray-700">Description</label>
+            <label for="course-description" class="block text-sm font-medium text-gray-700">Description</label>
             <textarea
+              id="course-description"
               v-model="courseForm.description"
               class="min-h-28 w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
             ></textarea>
           </div>
 
-          <label class="flex items-center gap-2 text-sm text-gray-700">
-            <input v-model="courseForm.active" type="checkbox">
-            Active
-          </label>
+          <div class="flex items-center gap-2">
+            <input id="course-active" v-model="courseForm.active" type="checkbox">
+            <label for="course-active" class="text-sm text-gray-700">Active</label>
+          </div>
 
           <div class="flex justify-end gap-3 pt-2">
             <button

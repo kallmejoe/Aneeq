@@ -1,6 +1,6 @@
 import { useUser } from "@core/composables/useUser";
 
-export default defineNuxtRouteMiddleware(async (to) => {
+export default defineNuxtRouteMiddleware(async () => {
   const user = useUser();
   const token = useCookie("token");
 
@@ -28,17 +28,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
   }
 
-  const routeRole = to.path.startsWith("/students")
-    ? "student"
-    : to.path.startsWith("/staff")
-      ? "professor"
-      : to.path.startsWith("/instructors")
-        ? "professor"
-        : null;
-
-  if (routeRole && user.value.role !== routeRole) {
-    return navigateTo(
-      `/${user.value.role === "student" ? "students" : user.value.role === "professor" ? "staff" : "staff"}/dashboard`,
-    );
+  if (user.value?.role !== "student") {
+    return navigateTo("/login");
   }
 });

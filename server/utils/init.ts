@@ -32,7 +32,7 @@ CREATE TABLE courses (
     description TEXT,
     professor_id INTEGER NOT NULL,
     active INTEGER NOT NULL DEFAULT 1,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (professor_id) REFERENCES professors_info(user_id) ON DELETE RESTRICT
 );
 

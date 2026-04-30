@@ -11,7 +11,7 @@ const email = ref("");
 const password = ref("");
 const error = ref("");
 const loading = ref(false);
-const { login, user } = useAuth();
+const { login } = useAuth();
 
 async function handleSubmit() {
   error.value = "";
@@ -21,15 +21,7 @@ async function handleSubmit() {
     const result = await login(email.value, password.value);
 
     if (result.success) {
-      const role = user.value?.role;
-      // Route based on role
-      const path =
-        role === "student"
-          ? "/students/dashboard"
-          : role === "professor"
-            ? "/instructors/dashboard"
-            : "/dashboard";
-      await navigateTo(path);
+      await navigateTo("/dashboard");
     } else {
       error.value = result.message || "Login failed";
     }
