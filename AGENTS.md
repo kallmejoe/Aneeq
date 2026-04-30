@@ -10,6 +10,9 @@ bun run dev:students
 
 # Staff app
 bun run dev:staff
+
+# Instructor app
+bun run dev:instructors
 ```
 
 ## Build
@@ -17,6 +20,7 @@ bun run dev:staff
 ```bash
 bun run build:students
 bun run build:staff
+bun run build:instructors
 bun run preview
 bun run generate
 ```
@@ -42,8 +46,10 @@ npx eslint .
 # Prepare Nuxt (runs automatically via postinstall)
 npx nuxt prepare
 
-# Typecheck
-npx nuxt typecheck
+# Typecheck single app
+npx nuxt typecheck apps/students
+npx nuxt typecheck apps/staff
+npx nuxt typecheck apps/instructors
 ```
 
 ## Adding New Endpoints - Agent Workflow
@@ -52,12 +58,11 @@ When adding a new endpoint to this monorepo, follow this structured workflow. Th
 
 ### Step 1: Database Schema Check
 
-1. Review the database schema in `db/schema.ts`
+1. Review the database schema in `server/utils/init.ts`
 2. Check existing tables to understand data models
 3. Determine if you need new tables or columns
 4. If changes needed:
-   - Update `db/schema.ts`
-   - Update `db/seed.ts` if default data is required
+   - Update `server/utils/init.ts`
    - Clear database: `rm db/database.sqlite`
    - Restart dev server to reinitialize
 
@@ -66,28 +71,55 @@ When adding a new endpoint to this monorepo, follow this structured workflow. Th
 1. Create API endpoint in `server/api/` following the naming pattern: `[resource].get|post|put|delete.ts`
 2. Use the established structure:
    ```typescript
-   // server/api/[resource].get.ts
+   // server/api/[resource].post.ts
+   import { jwtVerify } from "jose";
+   import { db } from "../../utils/db";
+
+   const JWT_SECRET = new TextEncoder().encode(
+     process.env.JWT_SECRET || "your-secret-key-change-in-production"
+   );
+
    export default defineEventHandler(async (event) => {
-     // Extract query/body parameters
-     const data = await readBody(event) // for POST/PUT
-     const query = getQuery(event) // for GET
-     
-     // Validate JWT token (via middleware)
-     const user = await getValidatedUser(event)
-     
-     // Access database - use getDatabase() helper
-     const db = getDatabase()
-     
-     // Execute query and return result
-     return db.selectFrom('tableName').selectAll().execute()
-   })
+     const authHeader = getHeader(event, "authorization");
+
+     if (!authHeader || !authHeader.startsWith("Bearer ")) {
+       setResponseStatus(event, 401);
+       return { success: false, message: "Unauthorized" };
+     }
+
+     const token = authHeader.substring(7);
+
+     let userId: number;
+     try {
+       const verified = await jwtVerify(token, JWT_SECRET);
+       const payload = verified.payload as { userId: number; email: string; role: string };
+       userId = payload.userId;
+     } catch {
+       setResponseStatus(event, 401);
+       return { success: false, message: "Invalid or expired token" };
+     }
+
+     const body = await readBody(event);
+     // ... handle the request
+
+     try {
+       const result = db.prepare("INSERT INTO table (...) VALUES (...)").run(...);
+       return { success: true, id: result.lastInsertRowid };
+     } catch (err) {
+       console.error("[resource] Error:", err);
+       return { success: false, message: "Failed to create resource" };
+     }
+   });
    ```
 3. Key principles:
-   - No hardcoded values - use database queries
+   - Use `jwtVerify` from "jose" for JWT validation
+   - Use `db` from `server/utils/db` for database operations
+   - Use `readBody(event)` for POST/PUT body data
+   - Use `getQuery(event)` for GET query parameters
+   - Use `setResponseStatus(event, code)` for HTTP status codes
+   - Return normalized JSON `{ success: boolean, ... }`
    - No role-based authorization in endpoint - rely on JWT token validation
    - Keep logic simple and focused
-   - Return normalized JSON responses
-   - Use proper HTTP status codes (200, 201, 400, 401, 404, 500)
 
 ### Step 3: Determine Component Scope
 
@@ -114,12 +146,11 @@ Components should follow this structure:
    </template>
 
    <script setup lang="ts">
-   // Use defineProps, no prop drilling
    interface Props {
      variant?: 'primary' | 'secondary'
      size?: 'sm' | 'md' | 'lg'
    }
-   const props = withDefaults(defineProps<Props>(), {
+   withDefaults(defineProps<Props>(), {
      variant: 'primary',
      size: 'md'
    })
@@ -135,9 +166,8 @@ Components should follow this structure:
    ```
 
 3. **Styling Principles:**
-   - Use OKLch color variables from `layers/core/assets/styles/variables.css`
-   - Apply Tailwind classes for spacing, sizing
-   - Use CVA (Class Variance Authority) for component variants
+   - Use CSS variables from `layers/core/assets/styles/variables.css`
+   - Use Tailwind classes for additional styling
    - NO hardcoded color values or magic numbers
    - Keep CSS simple - avoid complex nesting
 
@@ -147,6 +177,7 @@ Components should follow this structure:
 2. **Create page file:**
    - Student app: `apps/students/pages/[route].vue`
    - Staff app: `apps/staff/pages/[route].vue`
+   - Instructor app: `apps/instructors/pages/[route].vue`
 
 3. **Page structure:**
    ```vue
@@ -159,12 +190,11 @@ Components should follow this structure:
 
    <script setup lang="ts">
    definePageMeta({
-     middleware: ['auth'] // Automatically enforced by middleware
+     middleware: ['auth']
    })
 
    const title = 'Page Title'
    const handleAction = async () => {
-     // Fetch from /server/api endpoint
      const data = await $fetch('/api/[resource]', {
        method: 'POST',
        body: { /* data */ }
@@ -179,13 +209,19 @@ Components should follow this structure:
    </style>
    ```
 
+4. **Required app files** (if missing):
+   - `apps/[app]/app.vue` - Entry point
+   - `apps/[app]/layouts/default.vue` - Layout with navbar
+   - `apps/[app]/composables/useNavItems.ts` - Nav items
+   - `apps/[app]/middleware/auth.ts` - Auth middleware
+
 ### Step 6: Apply Theme Consistency
 
 - Use CSS variables from `layers/core/assets/styles/variables.css`
 - Available spacing scale: `--spacing-xs`, `--spacing-sm`, `--spacing-md`, `--spacing-lg`, `--spacing-xl`
 - Color system: `--color-base`, `--color-text`, `--color-primary`, `--color-secondary`, etc.
 - Font system: `--font-body`, `--font-heading`, `--font-mono`
-- Breakpoints: Use Tailwind's responsive prefixes (`sm:`, `md:`, `lg:`, `xl:`)
+- Breakpoints: Use Tailwind's responsive prefixes (`sm:`, `md:`, `lg`, `xl:`)
 
 ### Step 7: Authentication & Authorization
 
@@ -193,12 +229,12 @@ Components should follow this structure:
 
 Instead:
 1. All core layout checks only verify JWT presence (not role)
-2. Individual endpoints validate the JWT token via middleware: `validateToken(event)`
+2. Server endpoints validate the JWT token and check role if needed
 3. Endpoints return appropriate HTTP status codes:
    - `401` for missing/invalid token
    - `403` for insufficient permissions
 4. Frontend components/pages handle role-based UI visibility
-5. JWT token structure includes user role: payload contains `{ id, email, role }`
+5. JWT token structure includes user role: payload contains `{ userId, email, role }`
 
 ### Step 8: Code Quality Checklist
 
@@ -211,34 +247,48 @@ Before marking endpoint as complete:
 - [ ] Components use theme variables, not hardcoded colors
 - [ ] Component scope determined (core vs app-specific)
 - [ ] Page routes created with proper middleware
+- [ ] App has required files (app.vue, layouts, composables)
 - [ ] Code follows existing patterns in codebase
 - [ ] Linting passes: `npx eslint .`
-- [ ] Types are correct: `npx nuxt typecheck`
 - [ ] Tested in dev environment
 
 ### Workflow Summary
 
 ```
-1. Check Database Schema (db/schema.ts)
+1. Check Database Schema (server/utils/init.ts)
    ↓
 2. Create Server Endpoint (server/api/)
    ↓
 3. Determine Component Reusability
-   ├─→ YES: Add to layers/core/components/
+   ├─��� YES: Add to layers/core/components/
    └─→ NO: Add to apps/[app]/components/
    ↓
 4. Create Component (if needed)
    ↓
 5. Create Page Routes (apps/[app]/pages/)
    ↓
-6. Apply Theme & Style Consistency
+6. Create App Files (if needed)
+   ├─→ app.vue
+   ├─→ layouts/default.vue
+   ├─→ composables/useNavItems.ts
+   └─→ middleware/auth.ts
    ↓
-7. Verify Authentication (JWT token based)
+7. Apply Theme & Style Consistency
    ↓
-8. Run Linting & Type Checking
+8. Verify Authentication (JWT token based)
+   ↓
+9. Run Linting & Test
    ↓
 ✓ Complete
 ```
+
+### Available Apps
+
+| App | Route | Role |
+|-----|-------|------|
+| students | / | student |
+| staff | / | admin |
+| instructors | / | professor |
 
 ### Common Patterns
 
@@ -253,15 +303,43 @@ layers/core/components/Common/CardLayout.vue
 // Auto-imported - no imports needed
 ```
 
-**Adding middleware for auth:**
-```
-server/middleware/auth.ts
-// Automatically runs on all requests
+**Using auth in server endpoint:**
+```typescript
+import { jwtVerify } from "jose";
+import { db } from "../../utils/db";
+
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || "your-secret-key-change-in-production"
+);
+
+export default defineEventHandler(async (event) => {
+  const authHeader = getHeader(event, "authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    setResponseStatus(event, 401);
+    return { success: false, message: "Unauthorized" };
+  }
+
+  const token = authHeader.substring(7);
+  try {
+    const verified = await jwtVerify(token, JWT_SECRET);
+    const payload = verified.payload as { userId: number; role: string };
+    // use payload.userId, payload.role, payload.email
+  } catch {
+    setResponseStatus(event, 401);
+    return { success: false, message: "Invalid token" };
+  }
+});
 ```
 
-**Accessing database in composable:**
+**Database access:**
 ```typescript
-export const useFetchCourses = () => {
-  return useFetch('/api/courses')
-}
+import { db } from "../../utils/db";
+
+// Insert
+const result = db.prepare("INSERT INTO table (col) VALUES (?)").run(value);
+const newId = result.lastInsertRowid;
+
+// Select
+const row = db.prepare("SELECT * FROM table WHERE id = ?").get(id);
+const rows = db.prepare("SELECT * FROM table").all();
 ```
