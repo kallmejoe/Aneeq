@@ -20,7 +20,10 @@ const goToCourses = () => navigateTo('/courses')
       <div class="dashboard-card">
         <h2>Overview</h2>
         <p>You're all set! Explore your courses or check your progress below.</p>
-        <UiButton class="dashboard-cta" @click="goToCourses">Go to Course Enrollment</UiButton>
+        <div class="action-buttons">
+          <UiButton class="dashboard-cta" @click="goToCourses">Course Enrollment</UiButton>
+          <UiButton class="dashboard-cta" variant="outline" @click="navigateTo('/assignments')">My Assignments</UiButton>
+        </div>
       </div>
     </div>
   </div>
@@ -73,5 +76,11 @@ const goToCourses = () => navigateTo('/courses')
 
 .dashboard-cta {
   margin-top: 1rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 </style>
