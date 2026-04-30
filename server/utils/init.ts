@@ -1,5 +1,6 @@
 import { db } from "./db";
 
+try {
 db.exec(`
 
 -- users table
@@ -85,3 +86,7 @@ CREATE TABLE IF NOT EXISTS assignment_grades (
 );
 
 `);
+} catch (err) {
+  console.error('[DB Init] Schema initialization error:', err)
+  throw err
+}
