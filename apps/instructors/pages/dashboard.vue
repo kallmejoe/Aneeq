@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useUser } from '@core/composables/useUser';
-import { useAuth } from '@core/composables/useAuth';
+import { ref } from 'vue'
+import UiButton from '@core/components/ui/Button.vue'
+import { useUser } from '@core/composables/useUser'
+import { useAuth } from '@core/composables/useAuth'
 
 definePageMeta({
   middleware: ['auth']
-});
+})
 
-const user = useUser();
-const { logout, token } = useAuth();
+const user = useUser()
+const { logout, token } = useAuth()
 
 const showCreateCourseModal = ref(false)
 
@@ -57,101 +58,79 @@ async function createCourse() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <header class="bg-white shadow">
-      <div class="container mx-auto px-4 py-4">
-        <div class="flex justify-between items-center">
-          <h1 class="text-2xl font-bold">Instructor Dashboard</h1>
-          <div class="flex items-center gap-4">
-            <button
-              class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              @click="showCreateCourseModal = true"
-            >
-              Create Course
-            </button>
-            <span class="text-gray-600">Welcome, {{ user?.name }}</span>
-            <button class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600" @click="logout">
-              Logout
-            </button>
-          </div>
-        </div>
+  <div class="dashboard">
+    <div class="dashboard-header">
+      <h1 class="dashboard-title">Instructor Dashboard</h1>
+      <p class="dashboard-welcome">Welcome back, <strong>{{ user?.name }}</strong></p>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="dashboard-card">
+        <h2>Account Info</h2>
+        <p><strong>Email:</strong> {{ user?.email }}</p>
+        <p><strong>Role:</strong> {{ user?.role }}</p>
       </div>
-    </header>
-    <main class="container mx-auto px-4 py-8">
-      <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-xl font-semibold mb-4">Dashboard Overview</h2>
-        <p class="text-gray-600 mb-6">Welcome to the instructor dashboard!</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="p-4 border rounded-lg">
-            <span class="text-sm text-gray-500">Email</span>
-            <p class="font-medium">{{ user?.email }}</p>
-          </div>
-          <div class="p-4 border rounded-lg">
-            <span class="text-sm text-gray-500">Role</span>
-            <p class="font-medium">{{ user?.role }}</p>
-          </div>
-          <div class="p-4 border rounded-lg">
-            <span class="text-sm text-gray-500">User ID</span>
-            <p class="font-medium">{{ user?.id }}</p>
-          </div>
-        </div>
+
+      <div class="dashboard-card dashboard-card--action">
+        <h2>Quick Actions</h2>
+        <UiButton @click="showCreateCourseModal = true">
+          Create Course
+        </UiButton>
       </div>
-    </main>
+    </div>
 
     <div
       v-if="showCreateCourseModal"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+      class="modal-overlay"
       role="dialog"
       aria-modal="true"
       aria-labelledby="create-course-title"
     >
-      <div class="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl">
-        <div class="mb-6 flex items-center justify-between">
-          <h2 id="create-course-title" class="text-xl font-semibold">Create Course</h2>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="create-course-title">Create Course</h2>
           <button
             type="button"
             aria-label="Close dialog"
-            class="text-2xl leading-none text-gray-500 hover:text-gray-700"
+            class="modal-close"
             @click="showCreateCourseModal = false"
           >
-            &times;
+            ×
           </button>
         </div>
 
-        <form class="space-y-4" @submit.prevent="createCourse">
-          <div v-if="createCourseError" class="rounded border border-red-200 bg-red-50 px-3 py-2 text-red-600">
+        <form class="modal-form" @submit.prevent="createCourse">
+          <div v-if="createCourseError" class="error-message">
             {{ createCourseError }}
           </div>
 
-          <div class="space-y-1">
-            <label for="course-name" class="block text-sm font-medium text-gray-700">Course Name</label>
+          <div class="form-field">
+            <label for="course-name">Course Name</label>
             <input
               id="course-name"
               v-model="courseForm.name"
-              class="w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
               type="text"
               required
             >
           </div>
 
-          <div class="space-y-1">
-            <label for="course-description" class="block text-sm font-medium text-gray-700">Description</label>
+          <div class="form-field">
+            <label for="course-description">Description</label>
             <textarea
               id="course-description"
               v-model="courseForm.description"
-              class="min-h-28 w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
             ></textarea>
           </div>
 
-          <div class="flex items-center gap-2">
+          <div class="form-field form-field--checkbox">
             <input id="course-active" v-model="courseForm.active" type="checkbox" name="active">
-            <label for="course-active" class="text-sm text-gray-700">Active</label>
+            <label for="course-active">Active</label>
           </div>
 
-          <div class="flex justify-end gap-3 pt-2">
+          <div class="modal-actions">
             <button
               type="button"
-              class="rounded border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-50"
+              class="btn-secondary"
               @click="showCreateCourseModal = false"
             >
               Cancel
@@ -159,7 +138,7 @@ async function createCourse() {
 
             <button
               type="submit"
-              class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+              class="btn-primary"
               :disabled="creatingCourse"
             >
               {{ creatingCourse ? 'Creating...' : 'Create Course' }}
@@ -170,3 +149,190 @@ async function createCourse() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.dashboard {
+  padding-bottom: 2rem;
+}
+
+.dashboard-header {
+  margin-bottom: 2rem;
+}
+
+.dashboard-title {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.dashboard-welcome {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 0.9375rem;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.dashboard-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+
+.dashboard-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.dashboard-card p {
+  margin: 0.25rem 0;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 1rem;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 28rem;
+  background: var(--background);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: var(--foreground);
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.error-message {
+  padding: 0.75rem;
+  background: var(--destructive);
+  color: var(--destructive-foreground);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.form-field label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.form-field input[type="text"],
+.form-field input[type="email"],
+.form-field input[type="password"],
+.form-field textarea {
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 0.875rem;
+}
+
+.form-field textarea {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+.form-field--checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-field--checkbox input {
+  width: 1rem;
+  height: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--background);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--accent);
+}
+</style>
