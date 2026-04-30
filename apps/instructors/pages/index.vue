@@ -22,7 +22,7 @@ onMounted(() => {
       <div class="max-w-md mx-auto">
         <h1 class="text-3xl font-bold text-center mb-8">Instructor Signup</h1>
         <div class="bg-white rounded-lg shadow p-6">
-          <SignupForm role="instructor" />
+          <SignupForm role="professor" />
           <p class="mt-4 text-center text-sm text-gray-600">
             Already have an account? <NuxtLink to="/login" class="text-blue-600 hover:underline">Login</NuxtLink>
           </p>
