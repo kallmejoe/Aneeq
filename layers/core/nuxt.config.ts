@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+
 // layers/core/nuxt.config.ts
 export default defineNuxtConfig({
   // Disable SSR to avoid IPC connection issues in dev
@@ -16,7 +18,7 @@ export default defineNuxtConfig({
   pages: true,
 
   // Share the repo-level server handlers across each app.
-  serverDir: new URL('../../server', import.meta.url).pathname,
+  serverDir: fileURLToPath(new URL('../../server', import.meta.url)),
 
   css: [
     '@core/app/assets/css/main.css',
@@ -24,6 +26,6 @@ export default defineNuxtConfig({
 
   // Stable alias for shared layer imports.
   alias: {
-    '@core': new URL('../..', import.meta.url).pathname + 'layers/core',
+    '@core': fileURLToPath(new URL('.', import.meta.url)),
   },
-})
+})

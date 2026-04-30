@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 // Root config for monorepo - actual app config is in layers/core
 export default defineNuxtConfig({
@@ -18,7 +20,7 @@ export default defineNuxtConfig({
   },
 
   alias: {
-    '@core': new URL('./layers/core', import.meta.url).pathname,
+    '@core': fileURLToPath(new URL('./layers/core', import.meta.url)),
   },
 
   imports: {
