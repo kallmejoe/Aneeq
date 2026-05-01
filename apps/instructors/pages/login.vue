@@ -24,7 +24,7 @@ onMounted(() => {
       <p class="auth-subtitle">Log in to your instructor account</p>
       <LoginForm :allowed-roles="['professor']" portal-label="instructor" />
       <p class="auth-link">
-        Don't have an account? <NuxtLink to="/">Sign up</NuxtLink>
+        Don't have an account? <NuxtLink to="/signup">Sign up</NuxtLink>
       </p>
     </div>
   </div>
