@@ -1,80 +1,83 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import UiButton from '@core/components/ui/Button.vue'
+import { ref, onMounted } from "vue";
+import UiButton from "@core/components/ui/Button.vue";
 
 definePageMeta({
-  middleware: ['auth']
-})
+  middleware: ["auth"],
+});
 
-const token = useCookie('token')
+const token = useCookie("token");
 
-const courses = ref<any[]>([])
-const activeCourseIds = ref<number[]>([])
-const selectedCourseIds = ref<number[]>([])
+const courses = ref<any[]>([]);
+const activeCourseIds = ref<number[]>([]);
+const selectedCourseIds = ref<number[]>([]);
 
 const fetchCourses = async () => {
   try {
-    const res = await $fetch('/api/courses/list-courses')
+    const res = await $fetch("/api/courses/list-courses");
     if (res.success) {
-      courses.value = res.courses.filter((course: any) => course.active)
+      courses.value = res.courses.filter((course: any) => course.active);
     }
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
-}
+};
 
 const fetchActiveCourses = async () => {
   try {
-    const res = await $fetch('/api/student/activeCourses', {
+    const res = await $fetch("/api/student/activeCourses", {
       headers: {
-        Authorization: `Bearer ${token.value}`
-      }
-    })
+        Authorization: `Bearer ${token.value}`,
+      },
+    });
 
     if (res.success) {
-      activeCourseIds.value = res.courses.map((course: any) => course.id)
+      activeCourseIds.value = res.courses.map((course: any) => course.id);
     }
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
-}
+};
 
 onMounted(async () => {
-  await Promise.all([fetchCourses(), fetchActiveCourses()])
-})
+  await Promise.all([fetchCourses(), fetchActiveCourses()]);
+});
 
 const handleEnrollment = async (courseId: number) => {
   try {
-    const res = await $fetch('/api/student/enroll', {
-      method: 'POST',
+    const res = await $fetch("/api/student/enroll", {
+      method: "POST",
       headers: {
-        Authorization: `Bearer ${token.value}`
+        Authorization: `Bearer ${token.value}`,
       },
       body: {
-        courseIds: [courseId]
-      }
-    })
+        courseIds: [courseId],
+      },
+    });
 
     if (res.success) {
-      await fetchActiveCourses()
-      alert('Successfully enrolled!')
+      await fetchActiveCourses();
+      alert("Successfully enrolled!");
     } else {
-      alert(res.message || 'Error occurred')
+      alert(res.message || "Error occurred");
     }
   } catch (error) {
-    console.error(error)
-    alert('Enrollment failed')
+    console.error(error);
+    alert("Enrollment failed");
   }
-}
+};
 
-const isEnrolled = (courseId: number) => activeCourseIds.value.includes(courseId)
+const isEnrolled = (courseId: number) =>
+  activeCourseIds.value.includes(courseId);
 </script>
 
 <template>
   <div class="enrollment-page">
     <div class="enrollment-header">
       <h1 class="page-title">Enrollment</h1>
-      <p class="page-subtitle">Browse available courses and enroll in the ones you're interested in.</p>
+      <p class="page-subtitle">
+        Browse available courses and enroll in the ones you're interested in.
+      </p>
     </div>
 
     <div class="course-list">
@@ -88,11 +91,17 @@ const isEnrolled = (courseId: number) => activeCourseIds.value.includes(courseId
           <div class="course-info">
             <div class="course-title-row">
               <h3>{{ course.name }}</h3>
-              <span v-if="isEnrolled(course.id)" class="badge badge--enrolled">Enrolled</span>
+              <span v-if="isEnrolled(course.id)" class="badge badge--enrolled"
+                >Enrolled</span
+              >
               <span v-else class="badge badge--available">Available</span>
             </div>
-            <p v-if="course.professor_name" class="course-professor">{{ course.professor_name }}</p>
-            <p v-if="course.description" class="course-description">{{ course.description }}</p>
+            <p v-if="course.professor_name" class="course-professor">
+              {{ course.professor_name }}
+            </p>
+            <p v-if="course.description" class="course-description">
+              {{ course.description }}
+            </p>
           </div>
 
           <div class="course-action">

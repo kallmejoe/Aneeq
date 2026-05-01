@@ -1,28 +1,39 @@
 <script setup lang="ts">
 definePageMeta({
-  middleware: ['auth']
-})
+  middleware: ["auth"],
+});
 
-import { useUser } from '@core/composables/useUser'
-import UiButton from '@core/components/ui/Button.vue'
+import { useUser } from "@core/composables/useUser";
+import UiButton from "@core/components/ui/Button.vue";
 
-const user = useUser()
+const user = useUser();
 
-const goToCourses = () => navigateTo('/enrollment')
+const goToCourses = () => navigateTo("/enrollment");
 </script>
 
 <template>
   <div class="dashboard">
     <h1 class="dashboard-title">Student Dashboard</h1>
-    <p class="dashboard-welcome">Welcome back, <strong>{{ user?.name }}</strong> 👋</p>
+    <p class="dashboard-welcome">
+      Welcome back, <strong>{{ user?.name }}</strong> 👋
+    </p>
 
     <div class="dashboard-grid">
       <div class="dashboard-card">
         <h2>Overview</h2>
-        <p>You're all set! Explore your courses or check your progress below.</p>
+        <p>
+          You're all set! Explore your courses or check your progress below.
+        </p>
         <div class="action-buttons">
-          <UiButton class="dashboard-cta" @click="goToCourses">Course Enrollment</UiButton>
-          <UiButton class="dashboard-cta" variant="outline" @click="navigateTo('/assignments')">My Assignments</UiButton>
+          <UiButton class="dashboard-cta" @click="goToCourses"
+            >Course Enrollment</UiButton
+          >
+          <UiButton
+            class="dashboard-cta"
+            variant="outline"
+            @click="navigateTo('/assignments')"
+            >My Assignments</UiButton
+          >
         </div>
       </div>
     </div>
