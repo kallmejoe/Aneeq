@@ -8,7 +8,7 @@ import UiButton from '@core/components/ui/Button.vue'
 
 const user = useUser()
 
-const goToCourses = () => navigateTo('/courses')
+const goToCourses = () => navigateTo('/enrollment')
 </script>
 
 <template>
